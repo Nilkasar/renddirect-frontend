@@ -315,4 +315,21 @@ export const adminAPI = {
     api.post<ApiResponse>('/admin/cities', { name, state }),
 };
 
+// Payments API
+export const paymentsAPI = {
+  createOrder: (data: { dealId: string; amount: number; phone: string }) =>
+    api.post<ApiResponse>('/payments/create-order', data),
+
+  verifyPayment: (data: {
+    dealId: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }) => api.post<ApiResponse>('/payments/verify', data),
+
+  getPaymentDetails: (dealId: string) =>
+    api.get<ApiResponse>(`/payments/${dealId}`),
+};
+
 export default api;
+

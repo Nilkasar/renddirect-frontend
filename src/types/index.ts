@@ -169,3 +169,56 @@ export interface PropertyFilters {
   furnishing?: string;
   tenantPreference?: string;
 }
+
+// Payment types
+export interface Payment {
+  id: string;
+  dealId: string;
+  payerId: string;
+  amount: number;
+  description: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  status: 'PENDING' | 'INITIATED' | 'COMPLETED' | 'FAILED' | 'REFUNDED' | 'CANCELLED';
+  method?: 'CREDIT_CARD' | 'DEBIT_CARD' | 'NET_BANKING' | 'UPI' | 'WALLET' | 'EMI';
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentOrder {
+  orderId: string;
+  amount: number;
+  amountInPaise: number;
+  currency: string;
+  receipt: string;
+  customerId?: string;
+}
+
+export interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+  handler: (response: RazorpayPaymentResponse) => void;
+  modal?: {
+    ondismiss?: () => void;
+  };
+}
+
+export interface RazorpayPaymentResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+

@@ -25,6 +25,9 @@ import AdminHome from './pages/admin/AdminHome';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 
+// Payment Pages
+import DealPayment from './pages/payments/DealPayment';
+
 // Smart Home Component - shows role-specific landing page
 const SmartHome: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -165,6 +168,13 @@ const App: React.FC = () => {
         <Route path="/owner/properties/:id/edit" element={
           <ProtectedRoute allowedRoles={['OWNER']}>
             <PropertyForm />
+          </ProtectedRoute>
+        } />
+
+        {/* Payment Routes */}
+        <Route path="/payment/deal/:dealId" element={
+          <ProtectedRoute allowedRoles={['TENANT', 'OWNER']}>
+            <DealPayment />
           </ProtectedRoute>
         } />
 
