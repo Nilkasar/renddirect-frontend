@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { adminAPI } from '../../lib/api';
 import { User } from '../../types';
 import { LoadingSpinner, BackButton } from '../../components/Common';

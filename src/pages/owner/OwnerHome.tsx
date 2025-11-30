@@ -6,8 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { LoadingSpinner } from '../../components/Common';
 import {
   Plus, Building, Eye, MessageSquare, CheckCircle,
-  IndianRupee, TrendingUp, ArrowRight, Bell, Clock,
-  Home, Users, BarChart3, AlertCircle
+  ArrowRight, Home, Users, BarChart3, AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
