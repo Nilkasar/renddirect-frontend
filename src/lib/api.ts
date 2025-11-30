@@ -1,7 +1,20 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { ApiResponse } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+// Read and normalize Vite API env var. Trim trailing slash to avoid double slashes.
+const rawApiBase = import.meta.env.VITE_API_URL;
+const API_BASE_URL = rawApiBase ? String(rawApiBase).replace(/\/+$/, '') : '/api';
+
+// Expose and log at runtime for debugging in browser console
+if (typeof window !== 'undefined') {
+  try {
+    (window as any).__APP_API_BASE__ = API_BASE_URL;
+    // eslint-disable-next-line no-console
+    console.info('[api] API base URL:', API_BASE_URL);
+  } catch (e) {
+    // ignore
+  }
+}
 
 // Token storage keys
 const TOKEN_KEY = 'token';
