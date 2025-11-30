@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   Home, Mail, Lock, User, Phone, Eye, EyeOff, Building, Users,
   ArrowRight, ArrowLeft, CheckCircle, Sparkles, Shield, Star,
-  TrendingUp, Heart, Zap
+  Heart, Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

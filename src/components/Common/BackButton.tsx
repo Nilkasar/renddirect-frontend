@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 interface BackButtonProps {
@@ -28,7 +28,6 @@ const BackButton: React.FC<BackButtonProps> = ({
   variant = 'default',
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleClick = () => {
     if (onClick) {

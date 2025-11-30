@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { propertiesAPI } from '../../lib/api';
-import { Property } from '../../types';
 import { LoadingSpinner, BackButton } from '../../components/Common';
 import { Upload, X, Save, Send } from 'lucide-react';
 import toast from 'react-hot-toast';

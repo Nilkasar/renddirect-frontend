@@ -6,8 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { LoadingSpinner } from '../../components/Common';
 import {
-  ChevronLeft, Send, Home, Phone, Flag, CheckCircle,
-  IndianRupee, User
+  ChevronLeft, Send, Home, Phone, CheckCircle, User
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -21,7 +20,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onBack }) => {
   const {
     joinConversation,
     leaveConversation,
-    sendMessage: socketSendMessage,
     onNewMessage,
     markAsRead,
     onTypingStart,
@@ -39,7 +37,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onBack }) => {
   const [isConfirmingDeal, setIsConfirmingDeal] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isOwner = user?.role === 'OWNER';
   const otherUser = isOwner ? conversation.tenant : conversation.owner;
@@ -90,8 +88,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onBack }) => {
     });
 
     return () => {
-      unsubTypingStart?.();
-      unsubTypingStop?.();
+      if (typeof unsubTypingStart === 'function') unsubTypingStart();
+      if (typeof unsubTypingStop === 'function') unsubTypingStop();
     };
   }, [conversation.id, onTypingStart, onTypingStop, user?.id]);
 

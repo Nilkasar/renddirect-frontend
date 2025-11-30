@@ -12,10 +12,10 @@ interface SocketContextType {
   markAsRead: (conversationId: string) => void;
   startTyping: (conversationId: string) => void;
   stopTyping: (conversationId: string) => void;
-  onNewMessage: (callback: (message: Message) => void) => void;
-  onMessageRead: (callback: (data: { conversationId: string; readBy: string }) => void) => void;
-  onTypingStart: (callback: (data: { conversationId: string; userId: string }) => void) => void;
-  onTypingStop: (callback: (data: { conversationId: string; userId: string }) => void) => void;
+  onNewMessage: (callback: (message: Message) => void) => (() => void) | undefined;
+  onMessageRead: (callback: (data: { conversationId: string; readBy: string }) => void) => (() => void) | undefined;
+  onTypingStart: (callback: (data: { conversationId: string; userId: string }) => void) => (() => void) | undefined;
+  onTypingStop: (callback: (data: { conversationId: string; userId: string }) => void) => (() => void) | undefined;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);

@@ -6,7 +6,6 @@ import {
   IndianRupee,
   MessageSquare,
   Users,
-  Building,
   CheckCircle,
   MapPin,
   Home as HomeIcon,
@@ -66,7 +65,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [searchCity, setSearchCity] = useState('');
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
 
