@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { Message } from '../types';
+import { SOCKET_URL } from '../config/env';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -27,7 +28,9 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   useEffect(() => {
     if (isAuthenticated && token) {
-      const newSocket = io(window.location.origin, {
+      // Use SOCKET_URL from env config instead of window.location.origin
+      // This ensures we connect to the correct backend in production
+      const newSocket = io(SOCKET_URL, {
         auth: { token },
         transports: ['websocket', 'polling'],
       });

@@ -4,6 +4,7 @@ import { usePayment } from '../hooks/usePayment';
 import { LoadingSpinner } from './Common';
 import { CreditCard, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { RAZORPAY_KEY_ID } from '../config/env';
 
 interface PaymentGatewayProps {
   deal: Deal;
@@ -86,9 +87,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
    * Initiate payment
    */
   const handlePayment = async () => {
-    // Check if Razorpay key is available
-    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
-    if (!razorpayKey) {
+    // Check if Razorpay key is available (from centralized env config)
+    if (!RAZORPAY_KEY_ID) {
       toast.error('Payment gateway is not configured. Please contact support.');
       return;
     }
@@ -109,7 +109,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
 
     // Prepare Razorpay options
     const options: RazorpayOptions = {
-      key: razorpayKey,
+      key: RAZORPAY_KEY_ID,
       amount: order.amountInPaise,
       currency: order.currency,
       name: 'RentDirect',
