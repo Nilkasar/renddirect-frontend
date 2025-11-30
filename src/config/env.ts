@@ -2,48 +2,41 @@
  * Environment Configuration
  *
  * This module validates and exports all required environment variables.
- * The app will fail to start if required variables are missing.
+ * VITE_API_URL MUST be set - without it, API calls will fail.
  */
 
-// Validate required environment variables at startup
-function getRequiredEnv(key: string): string {
-  const value = import.meta.env[key];
+// Check if VITE_API_URL is set
+const rawApiUrl = import.meta.env.VITE_API_URL;
 
-  if (!value || value.trim() === '') {
-    const errorMessage = `
-╔════════════════════════════════════════════════════════════════╗
-║  FATAL: Missing required environment variable: ${key}
-║
-║  Please ensure ${key} is set in your environment.
-║
-║  For local development:
-║    Create a .env file with: ${key}=http://localhost:5000
-║
-║  For production (Render):
-║    Set ${key} in your Render environment variables
-║    Example: https://your-backend.onrender.com
-╚════════════════════════════════════════════════════════════════╝
-`;
-    console.error(errorMessage);
-    throw new Error(`Missing required environment variable: ${key}`);
-  }
+// Flag to track if env is properly configured
+export const ENV_CONFIGURED = Boolean(rawApiUrl && rawApiUrl.trim() !== '');
 
-  return value.trim();
+// Log warning if not configured (will be visible in browser console)
+if (!ENV_CONFIGURED) {
+  console.error(`
+╔════════════════════════════════════════════════════════════════════════╗
+║  ⚠️  WARNING: VITE_API_URL is not set!                                  ║
+║                                                                        ║
+║  API calls will NOT work correctly.                                    ║
+║                                                                        ║
+║  For Render deployment:                                                ║
+║    1. Go to Render Dashboard → Your Frontend Service → Environment     ║
+║    2. Add: VITE_API_URL = https://your-backend.onrender.com            ║
+║    3. Click "Manual Deploy" to rebuild with the new env var            ║
+║                                                                        ║
+║  Current value: ${rawApiUrl || '(empty)'}
+╚════════════════════════════════════════════════════════════════════════╝
+`);
 }
 
-// Get optional environment variable with fallback
-function getOptionalEnv(key: string, defaultValue: string = ''): string {
-  const value = import.meta.env[key];
-  return value?.trim() || defaultValue;
-}
-
-// Normalize URL by removing trailing slashes and /api suffix for base URL
+// Normalize URL by removing trailing slashes and /api suffix
 function normalizeApiUrl(url: string): string {
-  return url.replace(/\/+$/, '').replace(/\/api$/, '');
+  if (!url) return '';
+  return url.trim().replace(/\/+$/, '').replace(/\/api\/?$/, '');
 }
 
 // ============================================================================
-// REQUIRED ENVIRONMENT VARIABLES
+// API CONFIGURATION
 // ============================================================================
 
 /**
@@ -52,19 +45,19 @@ function normalizeApiUrl(url: string): string {
  *   - Local: http://localhost:5000
  *   - Production: https://rentdirect-backend.onrender.com
  */
-const rawApiUrl = getRequiredEnv('VITE_API_URL');
-export const API_BASE_URL = normalizeApiUrl(rawApiUrl);
+export const API_BASE_URL = normalizeApiUrl(rawApiUrl || '');
 
 /**
  * Full API URL with /api path
- * This is what you use for API calls
+ * This is what axios uses as baseURL
  */
-export const API_URL = `${API_BASE_URL}/api`;
+export const API_URL = API_BASE_URL ? `${API_BASE_URL}/api` : '/api';
 
 /**
  * Socket.IO server URL (same as API base, without /api)
+ * Falls back to window.location.origin if not configured
  */
-export const SOCKET_URL = API_BASE_URL;
+export const SOCKET_URL = API_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
 
 // ============================================================================
 // OPTIONAL ENVIRONMENT VARIABLES
@@ -73,7 +66,7 @@ export const SOCKET_URL = API_BASE_URL;
 /**
  * Razorpay Key ID for payment processing
  */
-export const RAZORPAY_KEY_ID = getOptionalEnv('VITE_RAZORPAY_KEY_ID', '');
+export const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || '';
 
 // ============================================================================
 // ENVIRONMENT FLAGS
@@ -84,35 +77,39 @@ export const IS_PROD = import.meta.env.PROD;
 export const MODE = import.meta.env.MODE;
 
 // ============================================================================
-// DEBUG: Log configuration in development
+// DEBUG: Always log configuration for troubleshooting
 // ============================================================================
 
-if (IS_DEV) {
-  console.info('[env] Environment configuration loaded:');
-  console.info(`  API_BASE_URL: ${API_BASE_URL}`);
-  console.info(`  API_URL: ${API_URL}`);
-  console.info(`  SOCKET_URL: ${SOCKET_URL}`);
-  console.info(`  MODE: ${MODE}`);
-}
+console.info('[env] Configuration:', {
+  VITE_API_URL: rawApiUrl || '(not set)',
+  API_BASE_URL: API_BASE_URL || '(not set)',
+  API_URL,
+  SOCKET_URL,
+  ENV_CONFIGURED,
+  MODE,
+});
 
-// Expose to window for debugging (development only)
+// Expose to window for debugging
 if (typeof window !== 'undefined') {
   (window as any).__ENV_CONFIG__ = {
+    VITE_API_URL: rawApiUrl,
     API_BASE_URL,
     API_URL,
     SOCKET_URL,
+    ENV_CONFIGURED,
     IS_DEV,
     IS_PROD,
     MODE,
   };
 }
 
-// Default export for convenience
+// Default export
 export default {
   API_BASE_URL,
   API_URL,
   SOCKET_URL,
   RAZORPAY_KEY_ID,
+  ENV_CONFIGURED,
   IS_DEV,
   IS_PROD,
   MODE,
