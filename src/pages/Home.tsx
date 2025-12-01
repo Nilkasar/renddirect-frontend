@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { propertiesAPI } from '../lib/api';
 import { Property } from '../types';
+import { SEOHead, getOrganizationSchema, getSearchActionSchema } from '../components/SEO';
 
 // City images from Unsplash
 const cityImages: Record<string, string> = {
@@ -156,8 +157,23 @@ const Home: React.FC = () => {
     { label: 'Money Saved', value: '₹2Cr+' },
   ];
 
+  // SEO structured data
+  const structuredData = [
+    getOrganizationSchema(),
+    getSearchActionSchema(),
+  ];
+
   return (
     <div>
+      {/* SEO Head */}
+      <SEOHead
+        title="Find Flats, PG & Houses for Rent"
+        description="India's #1 no-broker rental platform. Find flats, PG, houses & rooms for rent in Mumbai, Pune, Bangalore, Delhi & more. Direct connection with owners, no brokerage fees. Save up to ₹49,000!"
+        keywords="rent, flat for rent, house rent, room rent, 1BHK rent, 2BHK rent, 3BHK rent, PG rent, studio apartment, no brokerage, direct owner, Mumbai rent, Bangalore rent, Pune rent, Delhi rent"
+        canonicalUrl="/"
+        structuredData={structuredData}
+      />
+
       {/* Hero Section with Video Background */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Video Background */}

@@ -1,0 +1,40 @@
+# RentDirect24 Robots.txt
+# https://rentdirect24.com
+
+User-agent: *
+Allow: /
+Allow: /properties
+Allow: /rent/
+
+# Disallow admin and authenticated pages
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /owner/*
+Disallow: /tenant/*
+Disallow: /messages
+Disallow: /messages/*
+Disallow: /profile
+Disallow: /payment/*
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+# Disallow query parameters that create duplicate content
+Disallow: /*?page=
+Disallow: /*?sort=
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://rentdirect24.com/sitemap.xml
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing specific
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { propertiesAPI } from '../../lib/api';
 import { Property, PropertyFilters } from '../../types';
 import { PropertyCard, LoadingSpinner, BackButton } from '../../components/Common';
+import { SEOHead, getItemListSchema, getLocalBusinessSchema, getBreadcrumbSchema, getFAQSchema } from '../../components/SEO';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -104,8 +105,93 @@ const PropertyList: React.FC = () => {
 
   const hasActiveFilters = Object.values(filters).some((v) => v);
 
+  // Generate SEO content based on filters
+  const seoContent = useMemo(() => {
+    const city = filters.city || '';
+    const propertyType = filters.propertyType || '';
+    const roomConfig = filters.roomConfig || '';
+
+    const propertyTypeLabel = propertyTypes.find(t => t.value === propertyType)?.label || '';
+    const roomConfigLabel = roomConfigs.find(r => r.value === roomConfig)?.label || '';
+
+    let title = 'Properties for Rent in India';
+    let description = 'Find flats, PG, houses & rooms for rent across India. Direct connection with owners, no brokerage.';
+    let keywords = 'rent, flat for rent, house rent, room rent, PG rent, no brokerage';
+
+    if (city && propertyType) {
+      title = `${propertyTypeLabel} for Rent in ${city}`;
+      description = `Find ${propertyTypeLabel.toLowerCase()} for rent in ${city}. ${roomConfigLabel ? roomConfigLabel + ' ' : ''}properties available. Direct owner contact, no brokerage fees.`;
+      keywords = `${propertyTypeLabel} rent ${city}, ${city} ${propertyTypeLabel.toLowerCase()}, rent in ${city}`;
+    } else if (city) {
+      title = `Flats, PG & Houses for Rent in ${city}`;
+      description = `Find the best flats, PG accommodations, and houses for rent in ${city}. Browse ${properties.length}+ verified properties. No brokerage, direct owner contact.`;
+      keywords = `rent in ${city}, flat rent ${city}, PG ${city}, house rent ${city}, ${city} rental`;
+    } else if (propertyType) {
+      title = `${propertyTypeLabel} for Rent in India`;
+      description = `Search ${propertyTypeLabel.toLowerCase()} for rent across major Indian cities. Verified listings, no brokerage.`;
+      keywords = `${propertyTypeLabel} rent, ${propertyTypeLabel.toLowerCase()} for rent India`;
+    }
+
+    if (roomConfig) {
+      title = `${roomConfigLabel} ${title}`;
+      keywords = `${roomConfigLabel} rent, ${keywords}`;
+    }
+
+    return { title, description, keywords, city, propertyType };
+  }, [filters.city, filters.propertyType, filters.roomConfig, properties.length]);
+
+  // SEO structured data
+  const structuredData = useMemo(() => {
+    const schemas: object[] = [
+      getItemListSchema(properties, seoContent.city, seoContent.propertyType),
+    ];
+
+    if (seoContent.city) {
+      schemas.push(getLocalBusinessSchema(seoContent.city));
+      schemas.push(getBreadcrumbSchema([
+        { name: 'Home', url: '/' },
+        { name: 'Properties', url: '/properties' },
+        { name: seoContent.city, url: `/properties?city=${seoContent.city}` },
+      ]));
+
+      // Add FAQ for city pages
+      schemas.push(getFAQSchema([
+        {
+          question: `What is the average rent in ${seoContent.city}?`,
+          answer: `The average rent in ${seoContent.city} varies by location and property type. 1BHK apartments typically range from ₹8,000-₹25,000/month, while 2BHK apartments range from ₹15,000-₹45,000/month. PG accommodations start from ₹5,000/month.`,
+        },
+        {
+          question: `How can I find a flat for rent in ${seoContent.city} without brokerage?`,
+          answer: `RentDirect24 connects you directly with property owners in ${seoContent.city}, eliminating brokerage fees. Simply browse listings, contact owners directly through our chat feature, and close deals with minimal platform fees.`,
+        },
+        {
+          question: `What documents are required to rent a flat in ${seoContent.city}?`,
+          answer: `Typically, you'll need ID proof (Aadhaar/PAN), address proof, employment proof (salary slips/offer letter), and passport-size photos. Some owners may also require a police verification certificate.`,
+        },
+      ]));
+    }
+
+    return schemas;
+  }, [properties, seoContent]);
+
+  const canonicalUrl = useMemo(() => {
+    const params = new URLSearchParams();
+    if (seoContent.city) params.set('city', seoContent.city);
+    if (seoContent.propertyType) params.set('propertyType', seoContent.propertyType);
+    return `/properties${params.toString() ? '?' + params.toString() : ''}`;
+  }, [seoContent]);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Head */}
+      <SEOHead
+        title={seoContent.title}
+        description={seoContent.description}
+        keywords={seoContent.keywords}
+        canonicalUrl={canonicalUrl}
+        structuredData={structuredData}
+      />
+
       {/* Header */}
       <div className="bg-primary-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

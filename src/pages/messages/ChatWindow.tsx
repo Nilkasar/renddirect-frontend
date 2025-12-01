@@ -182,19 +182,37 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onBack }) => {
     }
   };
 
-  const formatTime = (date: string) => {
-    return new Date(date).toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  // Safe date formatting with fallback for invalid dates
+  const formatTime = (dateString: string | undefined | null): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return '';
+    }
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+  // Safe date formatting with fallback for invalid dates
+  const formatDate = (dateString: string | undefined | null): string => {
+    if (!dateString) return 'Today';
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) return 'Today';
+      return date.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      return 'Today';
+    }
   };
 
   const groupMessagesByDate = (messages: Message[]) => {

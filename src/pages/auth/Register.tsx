@@ -311,7 +311,7 @@ const Register: React.FC = () => {
 
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold text-gray-700">
-                    Phone <span className="text-gray-400 font-normal">(Optional)</span>
+                    Phone <span className="text-gray-400 font-normal">(Optional - 10 digits)</span>
                   </label>
                   <div className={`relative transition-all duration-300 ${focusedField === 'phone' ? 'scale-[1.02]' : ''}`}>
                     <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors ${focusedField === 'phone' ? 'text-primary-600' : 'text-gray-400'}`}>
@@ -320,13 +320,26 @@ const Register: React.FC = () => {
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) => {
+                        // Only allow digits and limit to 10 characters
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setFormData({ ...formData, phone: value });
+                      }}
                       onFocus={() => setFocusedField('phone')}
                       onBlur={() => setFocusedField(null)}
-                      className="w-full pl-10 pr-3 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all duration-300 text-sm"
-                      placeholder="+91 9876543210"
+                      className="w-full pl-10 pr-10 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all duration-300 text-sm"
+                      placeholder="9876543210"
+                      maxLength={10}
                     />
+                    {formData.phone && formData.phone.length === 10 && (
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center animate-scale-in">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      </div>
+                    )}
                   </div>
+                  {formData.phone && formData.phone.length > 0 && formData.phone.length < 10 && (
+                    <p className="text-xs text-amber-600 mt-1">{10 - formData.phone.length} more digits needed</p>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-1">

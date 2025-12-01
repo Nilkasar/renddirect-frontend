@@ -4,6 +4,7 @@ import { propertiesAPI, chatAPI } from '../../lib/api';
 import { Property } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { LoadingSpinner } from '../../components/Common';
+import { SEOHead, getPropertySchema, getProductSchema, getBreadcrumbSchema } from '../../components/SEO';
 import {
   MapPin, IndianRupee, Bed, Bath, Home,
   Ruler, Building, MessageSquare, Share2,
@@ -544,8 +545,34 @@ const PropertyDetails: React.FC = () => {
     );
   }
 
+  // SEO structured data for property
+  const structuredData = [
+    getPropertySchema(property),
+    getProductSchema(property),
+    getBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'Properties', url: '/properties' },
+      { name: property.city, url: `/properties?city=${property.city}` },
+      { name: property.title, url: `/properties/${property.id}` },
+    ]),
+  ];
+
+  const seoTitle = `${getRoomConfigLabel(property.roomConfig)} ${getPropertyTypeLabel(property.propertyType)} for Rent in ${property.locality}, ${property.city}`;
+  const seoDescription = `${property.title} - ${getRoomConfigLabel(property.roomConfig)} ${getFurnishingLabel(property.furnishing).toLowerCase()} ${getPropertyTypeLabel(property.propertyType).toLowerCase()} for rent in ${property.locality}, ${property.city}. Rent: ₹${formatRent(property.rentAmount)}/month. ${property.amenities?.slice(0, 3).join(', ')}. No brokerage, direct owner contact.`;
+
   return (
     <div className="bg-gray-50 min-h-screen">
+      {/* SEO Head */}
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        keywords={`${property.roomConfig} rent ${property.city}, ${property.propertyType} rent ${property.locality}, ${property.furnishing} flat ${property.city}, rent in ${property.locality}, ${property.city} rental`}
+        canonicalUrl={`/properties/${property.id}`}
+        ogType="product"
+        ogImage={property.images?.[0]}
+        structuredData={structuredData}
+      />
+
       {/* Floating Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

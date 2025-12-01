@@ -11,6 +11,7 @@ import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import PropertyList from './pages/properties/PropertyList';
 import PropertyDetails from './pages/properties/PropertyDetails';
+import CityLanding from './pages/properties/CityLanding';
 
 // Protected Pages
 import Messages from './pages/messages/Messages';
@@ -27,6 +28,9 @@ import AdminUsers from './pages/admin/AdminUsers';
 
 // Payment Pages
 import DealPayment from './pages/payments/DealPayment';
+
+// Profile
+import Profile from './pages/profile/Profile';
 
 // Smart Home Component - shows role-specific landing page
 const SmartHome: React.FC = () => {
@@ -50,7 +54,7 @@ const SmartHome: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const { isLoading, user } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -125,6 +129,9 @@ const App: React.FC = () => {
         <Route path="/properties" element={<PropertyList />} />
         <Route path="/properties/:id" element={<PropertyDetails />} />
 
+        {/* SEO-friendly city landing pages */}
+        <Route path="/rent/:city" element={<CityLanding />} />
+
         {/* Protected: Messages */}
         <Route path="/messages" element={
           <ProtectedRoute>
@@ -181,21 +188,7 @@ const App: React.FC = () => {
         {/* Profile */}
         <Route path="/profile" element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 py-8">
-              <div className="max-w-4xl mx-auto px-4">
-                <h1 className="text-2xl font-bold mb-4">Profile</h1>
-                <div className="card p-6">
-                  <p className="text-gray-600">
-                    Profile management coming soon. For now, you can view your details here:
-                  </p>
-                  <div className="mt-4 space-y-2">
-                    <p><strong>Name:</strong> {user?.firstName} {user?.lastName}</p>
-                    <p><strong>Email:</strong> {user?.email}</p>
-                    <p><strong>Role:</strong> {user?.role}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Profile />
           </ProtectedRoute>
         } />
       </Route>

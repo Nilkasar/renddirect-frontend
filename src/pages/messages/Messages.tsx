@@ -58,19 +58,28 @@ const Messages: React.FC = () => {
     }
   };
 
-  const formatTime = (date: string) => {
-    const d = new Date(date);
-    const now = new Date();
-    const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+  // Safe date formatting with fallback for invalid dates
+  const formatTime = (dateString: string | undefined | null): string => {
+    if (!dateString) return '';
+    try {
+      const d = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(d.getTime())) return '';
 
-    if (diffDays === 0) {
-      return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return d.toLocaleDateString('en-IN', { weekday: 'short' });
-    } else {
-      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      const now = new Date();
+      const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      } else if (diffDays === 1) {
+        return 'Yesterday';
+      } else if (diffDays < 7) {
+        return d.toLocaleDateString('en-IN', { weekday: 'short' });
+      } else {
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      }
+    } catch {
+      return '';
     }
   };
 
